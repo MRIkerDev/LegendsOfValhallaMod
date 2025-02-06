@@ -1,0 +1,19 @@
+# Ignora archivos generados por Gradle
+.gradle/
+build/
+out/
+bin/
+
+# Ignora archivos de IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignora archivos de Eclipse
+.classpath
+.project
+.settings/
+
+# Ignora archivos de usuario
+run/

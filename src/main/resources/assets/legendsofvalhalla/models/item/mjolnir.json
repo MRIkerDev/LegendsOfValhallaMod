@@ -1,0 +1,123 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        -74,
+        0
+      ],
+      "translation": [
+        -2.75,
+        -2.75,
+        4.25
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        -74,
+        0
+      ],
+      "translation": [
+        -3.25,
+        -2.75,
+        1.25
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -1,
+        -74,
+        0
+      ],
+      "translation": [
+        -2.75,
+        -4.25,
+        1.25
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -74,
+        0
+      ],
+      "translation": [
+        -3.75,
+        -4.25,
+        -1.5
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        -74,
+        0
+      ],
+      "translation": [
+        -2.75,
+        -17,
+        1.25
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "gui": {
+      "rotation": [
+        0,
+        0,
+        -14.75
+      ],
+      "translation": [
+        -1,
+        -7.5,
+        -2
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    },
+    "fixed": {
+      "translation": [
+        1.25,
+        -7,
+        2.5
+      ],
+      "scale": [
+        4,
+        4,
+        4
+      ]
+    }
+  },
+  "textures": {
+    "particle": "legendsofvalhalla:item/mjolnir"
+  }
+}
