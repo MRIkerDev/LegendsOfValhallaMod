@@ -1,0 +1,17 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.mjolnir.idle": {
+			"loop": true,
+			"animation_length": 0.9583,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.9583": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}
