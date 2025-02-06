@@ -32,14 +32,8 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: mapping_channel, version: mapping_version
 
-    // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
-    // In most cases, it is not necessary to enable.
-    // enableEclipsePrepareRuns = true
-    // enableIdeaPrepareRuns = true
 
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
-    // It is REQUIRED to be set to true for this template to function.
-    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+
     copyIdeResources = true
 
     // When true, this property will add the folder name of all declared run configurations to generated IDE run configurations.
@@ -112,12 +106,14 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven{
+    maven {
         name = 'GeckoLib'
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content {
-            includeGroup("software.bernie.geckolib")
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
         }
+
     }
 }
 
@@ -132,20 +128,7 @@ dependencies {
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
-    // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-    // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-    // runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    implementation("com.eliotlash.mclib:mclib:20")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
