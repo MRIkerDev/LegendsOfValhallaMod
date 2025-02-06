@@ -11,4 +11,3 @@ public class MjolnirRenderer extends GeoItemRenderer<MjolnirItem> {
         super(new MjolnirModel());
     }
 }
-

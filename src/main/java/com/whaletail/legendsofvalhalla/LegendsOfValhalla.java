@@ -3,6 +3,7 @@ package com.whaletail.legendsofvalhalla;
 
 import com.mojang.logging.LogUtils;
 
+import com.whaletail.legendsofvalhalla.item.custom.ModCreativeModTabs;
 import com.whaletail.legendsofvalhalla.item.custom.ModItems;
 
 import net.minecraft.world.item.CreativeModeTabs;
@@ -34,7 +35,10 @@ public class LegendsOfValhalla
     public LegendsOfValhalla()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        ModCreativeModTabs.register(modEventBus);
         ModItems.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
@@ -48,9 +52,7 @@ public class LegendsOfValhalla
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-        if(event.getTabKey()==CreativeModeTabs.INGREDIENTS){
-            event.accept(ModItems.MJOLNIR);
-        }
+
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
