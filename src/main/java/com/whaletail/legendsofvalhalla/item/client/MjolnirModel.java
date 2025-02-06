@@ -1,6 +1,5 @@
-package com.whaletail.legendsofvalhalla.items.client;
-
-import com.whaletail.legendsofvalhalla.items.MjolnirItem;
+package com.whaletail.legendsofvalhalla.item.client;
+import com.whaletail.legendsofvalhalla.item.custom.MjolnirItem;
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;

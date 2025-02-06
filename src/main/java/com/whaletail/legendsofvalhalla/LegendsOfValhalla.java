@@ -2,7 +2,9 @@ package com.whaletail.legendsofvalhalla;
 
 
 import com.mojang.logging.LogUtils;
-import com.whaletail.legendsofvalhalla.items.ModItems;
+
+import com.whaletail.legendsofvalhalla.item.custom.ModItems;
+
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import software.bernie.geckolib.GeckoLib;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -32,11 +35,10 @@ public class LegendsOfValhalla
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.register(modEventBus);
-
         modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
-
+        GeckoLib.initialize();
 
     }
 

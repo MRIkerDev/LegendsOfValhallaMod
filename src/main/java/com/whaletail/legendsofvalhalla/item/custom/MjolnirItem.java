@@ -1,6 +1,5 @@
-package com.whaletail.legendsofvalhalla.items;
-
-import com.whaletail.legendsofvalhalla.items.client.MjolnirRenderer;
+package com.whaletail.legendsofvalhalla.item.custom;
+import com.whaletail.legendsofvalhalla.item.client.MjolnirRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;

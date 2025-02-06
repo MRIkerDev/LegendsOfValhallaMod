@@ -1,6 +1,7 @@
-package com.whaletail.legendsofvalhalla.items;
+package com.whaletail.legendsofvalhalla.item.custom;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
+
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

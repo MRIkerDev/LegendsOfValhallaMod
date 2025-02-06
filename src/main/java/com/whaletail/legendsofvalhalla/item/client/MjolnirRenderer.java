@@ -1,6 +1,8 @@
-package com.whaletail.legendsofvalhalla.items.client;
+package com.whaletail.legendsofvalhalla.item.client;
+import com.whaletail.legendsofvalhalla.item.custom.MjolnirItem;
 
-import com.whaletail.legendsofvalhalla.items.MjolnirItem;
+
+
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class MjolnirRenderer extends GeoItemRenderer<MjolnirItem> {
