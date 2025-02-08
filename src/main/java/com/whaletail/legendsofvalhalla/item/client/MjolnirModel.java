@@ -16,7 +16,7 @@ public class MjolnirModel extends GeoModel<MjolnirItem> {
     }
 
     @Override
-    public ResourceLocation getAnimationResource(MjolnirItem mjolnirItem) {
-        return new ResourceLocation(LegendsOfValhalla.MODID,"animations/mjolnir.animation.json");
+    public ResourceLocation getAnimationResource(MjolnirItem animatable) {
+        return new ResourceLocation(LegendsOfValhalla.MODID, "animations/mjolnir.animation.json");
     }
 }
