@@ -3,6 +3,7 @@ package com.whaletail.legendsofvalhalla;
 
 import com.mojang.logging.LogUtils;
 
+import com.whaletail.legendsofvalhalla.entity.custom.ModEntities;
 import com.whaletail.legendsofvalhalla.item.custom.ModCreativeModTabs;
 import com.whaletail.legendsofvalhalla.item.custom.ModItems;
 
@@ -38,7 +39,7 @@ public class LegendsOfValhalla
 
         ModCreativeModTabs.register(modEventBus);
         ModItems.register(modEventBus);
-
+        ModEntities.ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);

@@ -15,6 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModCreativeModTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS=
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, LegendsOfValhalla.MODID);
+
 public static final RegistryObject<CreativeModeTab> LEGENDS_OF_VALHALLA_TAB=CREATIVE_MODE_TABS.register("legends_of_valhalla",
                                         //aqui se cambia el icono
         ()->CreativeModeTab.builder().icon(()->new ItemStack(ModItems.MJOLNIR.get()))
@@ -25,6 +26,8 @@ public static final RegistryObject<CreativeModeTab> LEGENDS_OF_VALHALLA_TAB=CREA
                     //pOutput.accept(Items.DIAMOND); //asi se agregaria items vanilla
                 } )
                 .build());
+
+
     public static void register(IEventBus eventBus){
         CREATIVE_MODE_TABS.register(eventBus);
     }
