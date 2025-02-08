@@ -33,22 +33,28 @@ public class MjolnirItem extends Item implements GeoItem, Vanishable {
         super(properties);
     }
 
-  /*  @Override
+    @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUseHand) {
-        ItemStack stack = player.getItemInHand(hand);
+        ItemStack itemstack = pPlayer.getItemInHand(pUseHand);
 
-        level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ANVIL_BREAK, SoundSource.PLAYERS, 1.0F, 0.8F); //
-        if (!level.isClientSide) {
-            ThrownMjolnir thrownMjolnir = new ThrownMjolnir(player, level);
-            thrownMjolnir.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 1.0F);
-            level.addFreshEntity(thrownMjolnir);
+        pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
+                SoundEvents.ANVIL_BREAK, SoundSource.PLAYERS, 1.0F, 0.8F);
+        if (!pLevel.isClientSide) {
+            MjolnirProjectileEntity mjolnirProjectile = new MjolnirProjectileEntity(pPlayer, pLevel);
+            mjolnirProjectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), 0.0F, 1.5F, 0F);
+            pLevel.addFreshEntity(mjolnirProjectile);
         }
-
-        player.awardStat(Stats.ITEM_USED.get(this));
+        /*
+        pPlayer.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResultHolder.success(stack);
+        */
+        pPlayer.awardStat(Stats.ITEM_USED.get(this));
+        if(!pPlayer.getAbilities().instabuild){
+            itemstack.shrink(1);
+        }
+        return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide);
     }
-*/
+
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.SPEAR;
