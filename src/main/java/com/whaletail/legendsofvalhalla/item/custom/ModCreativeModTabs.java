@@ -23,6 +23,7 @@ public static final RegistryObject<CreativeModeTab> LEGENDS_OF_VALHALLA_TAB=CREA
                 .displayItems((pParameters, pOutput) ->{
                     //se agrega el mjolnir
                     pOutput.accept(ModItems.MJOLNIR.get());
+                    pOutput.accept(ModItems.FENRIR_SPAWN_EGG.get());
                     //pOutput.accept(Items.DIAMOND); //asi se agregaria items vanilla
                 } )
                 .build());
