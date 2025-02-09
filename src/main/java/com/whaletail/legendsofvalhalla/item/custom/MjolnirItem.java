@@ -1,5 +1,6 @@
 package com.whaletail.legendsofvalhalla.item.custom;
 
+import com.whaletail.legendsofvalhalla.entity.custom.MjolnirProjectileEntity;
 import com.whaletail.legendsofvalhalla.item.client.MjolnirRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.sounds.SoundEvents;
@@ -25,7 +26,7 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.function.Consumer;
 
-public class MjolnirItem extends Item implements GeoItem, Vanishable {
+public class MjolnirItem extends Item implements GeoItem {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -33,27 +34,28 @@ public class MjolnirItem extends Item implements GeoItem, Vanishable {
         super(properties);
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUseHand) {
-        ItemStack itemstack = pPlayer.getItemInHand(pUseHand);
 
-        pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(),
-                SoundEvents.ANVIL_BREAK, SoundSource.PLAYERS, 1.0F, 0.8F);
-        if (!pLevel.isClientSide) {
-            MjolnirProjectileEntity mjolnirProjectile = new MjolnirProjectileEntity(pPlayer, pLevel);
-            mjolnirProjectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), 0.0F, 1.5F, 0F);
-            pLevel.addFreshEntity(mjolnirProjectile);
-        }
-        /*
-        pPlayer.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResultHolder.success(stack);
-        */
-        pPlayer.awardStat(Stats.ITEM_USED.get(this));
-        if(!pPlayer.getAbilities().instabuild){
-            itemstack.shrink(1);
-        }
-        return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide);
-    }
+  @Override
+  public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUseHand) {
+      ItemStack itemstack = pPlayer.getItemInHand(pUseHand);
+      pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), SoundEvents.ANVIL_BREAK, SoundSource.NEUTRAL, 1.0F, 0.8F);
+
+      if (!pLevel.isClientSide) {
+          MjolnirProjectileEntity mjolnirProjectile = new MjolnirProjectileEntity(pLevel, pPlayer);
+          mjolnirProjectile.setPos(pPlayer.getX(), pPlayer.getY() + 1.5, pPlayer.getZ());
+          mjolnirProjectile.shootFromRotation(pPlayer, pPlayer.getXRot(), pPlayer.getYRot(), 0.0F, 2.5F, 1.0F);
+          pLevel.addFreshEntity(mjolnirProjectile);
+      }
+
+      pPlayer.awardStat(Stats.ITEM_USED.get(this));
+
+      if (!pPlayer.getAbilities().instabuild) {
+          itemstack.shrink(1);
+      }
+
+      return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide());
+  }
+
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
@@ -61,8 +63,6 @@ public class MjolnirItem extends Item implements GeoItem, Vanishable {
     }
 
     // Métodos de animación (GeoItem)
-
-
     private PlayState predicate(AnimationState animationState) {
         animationState.getController().setAnimation(
                 RawAnimation.begin().then("animation.mjolnir.idle", Animation.LoopType.LOOP)
