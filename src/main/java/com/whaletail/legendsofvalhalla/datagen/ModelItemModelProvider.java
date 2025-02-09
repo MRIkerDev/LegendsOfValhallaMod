@@ -1,6 +1,6 @@
 package com.whaletail.legendsofvalhalla.datagen;
 
-import com.whaletail.legendsofvalhalla.item.custom.ModItems;
+import com.whaletail.legendsofvalhalla.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;

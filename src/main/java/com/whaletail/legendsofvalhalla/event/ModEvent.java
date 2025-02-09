@@ -2,7 +2,7 @@ package com.whaletail.legendsofvalhalla.event;
 
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
-import com.whaletail.legendsofvalhalla.entity.custom.ModEntities;
+import com.whaletail.legendsofvalhalla.entity.ModEntities;
 import com.whaletail.legendsofvalhalla.entity.custom.boss.fenrir.FenrirBossEntity;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

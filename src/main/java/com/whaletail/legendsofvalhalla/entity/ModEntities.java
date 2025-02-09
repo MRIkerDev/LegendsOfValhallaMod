@@ -1,7 +1,8 @@
-package com.whaletail.legendsofvalhalla.entity.custom;
+package com.whaletail.legendsofvalhalla.entity;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
-import com.whaletail.legendsofvalhalla.item.custom.ThrownMjolnir;
+import com.whaletail.legendsofvalhalla.entity.custom.MjolnirProjectileEntity;
+import com.whaletail.legendsofvalhalla.entity.custom.boss.fenrir.FenrirBossEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.eventbus.api.IEventBus;

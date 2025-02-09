@@ -1,6 +1,7 @@
 package com.whaletail.legendsofvalhalla.item;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
+import com.whaletail.legendsofvalhalla.item.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;

@@ -1,8 +1,11 @@
-package com.whaletail.legendsofvalhalla.item.custom;
+package com.whaletail.legendsofvalhalla.item;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
 
+import com.whaletail.legendsofvalhalla.entity.ModEntities;
+import com.whaletail.legendsofvalhalla.item.custom.MjolnirItem;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
