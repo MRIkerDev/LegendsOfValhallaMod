@@ -34,6 +34,7 @@ public class MjolnirItem extends Item implements GeoItem {
         super(properties);
     }
 
+
   @Override
   public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUseHand) {
       ItemStack itemstack = pPlayer.getItemInHand(pUseHand);
@@ -54,6 +55,7 @@ public class MjolnirItem extends Item implements GeoItem {
 
       return InteractionResultHolder.sidedSuccess(itemstack, pLevel.isClientSide());
   }
+
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
