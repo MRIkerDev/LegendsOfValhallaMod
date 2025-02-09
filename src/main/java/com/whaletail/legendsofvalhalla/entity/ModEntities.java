@@ -1,7 +1,7 @@
-package com.whaletail.legendsofvalhalla.entity;
+package com.whaletail.legendsofvalhalla.entity.custom;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
-import com.whaletail.legendsofvalhalla.entity.custom.MjolnirProjectileEntity;
+import com.whaletail.legendsofvalhalla.item.custom.ThrownMjolnir;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -22,5 +22,5 @@ public class ModEntities {
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
     }
-
+    public static final RegistryObject<EntityType<FenrirBossEntity>> FENRIR = ENTITY_TYPES.register("fenrir",() -> EntityType.Builder.of(FenrirBossEntity::new, MobCategory.MONSTER).sized(4.0F,4.0F).build("fenrir"));
 }

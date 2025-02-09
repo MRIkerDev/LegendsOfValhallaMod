@@ -3,12 +3,14 @@ package com.whaletail.legendsofvalhalla;
 
 import com.mojang.logging.LogUtils;
 
-import com.whaletail.legendsofvalhalla.entity.ModEntities;
-import com.whaletail.legendsofvalhalla.entity.client.MjolnirProjectileRenderer;
-import com.whaletail.legendsofvalhalla.item.ModCreativeModTabs;
-import com.whaletail.legendsofvalhalla.item.ModItems;
+import com.whaletail.legendsofvalhalla.entity.client.FenrirBossModel;
+import com.whaletail.legendsofvalhalla.entity.client.FenrirBossRenderer;
+import com.whaletail.legendsofvalhalla.entity.custom.ModEntities;
+import com.whaletail.legendsofvalhalla.item.custom.ModCreativeModTabs;
+import com.whaletail.legendsofvalhalla.item.custom.ModItems;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -72,7 +74,7 @@ public class LegendsOfValhalla
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            EntityRenderers.register(ModEntities.MJOLNIR.get(), MjolnirProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.FENRIR.get(), FenrirBossRenderer::new);
         }
 
     }
