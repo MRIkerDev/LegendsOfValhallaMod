@@ -1,4 +1,6 @@
 {
   "item.legendsofvalhalla.mjolnir": "Mjolnir",
-  "creativetab.legends_of_valhalla_tab": "Leyendas del Valhalla"
+  "creativetab.legends_of_valhalla_tab": "Leyendas del Valhalla",
+  "entity.legendsofvalhalla.fenrir": "Fenrir",
+  "item.legendsofvalhalla.fenrir_spawn_egg": "Generar fenrir"
 }

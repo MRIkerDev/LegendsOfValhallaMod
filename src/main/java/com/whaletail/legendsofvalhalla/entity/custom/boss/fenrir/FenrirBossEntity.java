@@ -2,6 +2,7 @@ package com.whaletail.legendsofvalhalla.entity.custom.boss.fenrir;
 
 import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -26,24 +28,36 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 public class FenrirBossEntity extends Monster implements GeoEntity {
     private int phase = 1;
     private int chainsRemaining = 3;
-    private Level level;
-    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final Level level;
+    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private final ArrayList<ArmorStand> chains = new ArrayList<>();
     private final double CHAINS_LIMIT = 5.0F;
     private double chainsMinLimitX;
     private double chainsMaxLimitX;
     private double chainsMinLimitZ;
     private double chainsMaxLimitZ;
-
+    private final int CHAIN_HIT_POINTS = 4;
+    private int chainHitPoints = CHAIN_HIT_POINTS;
+    private int roarCooldown = 0;
 
     public FenrirBossEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.level = level;
+    }
+
+    private int getPhase(){
+        return phase;
+    }
+
+    private void setPhase(int new_phase){
+        phase = new_phase;
     }
 
     public static AttributeSupplier setAttributes(){
@@ -66,10 +80,14 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     private void removeChains(){
         if(chains.isEmpty()) return;
 
-        ArmorStand chain = chains.remove(0);
-        chain.discard();
-
-        chainsRemaining--;
+        chainHitPoints--;
+        if(chainHitPoints == 0) {
+            chainsRemaining--;
+            ArmorStand chain = chains.remove(0);
+            chain.discard();
+            this.playSound(SoundEvents.GENERIC_EXPLODE, 1.0F, 1.0F);
+            chainHitPoints = CHAIN_HIT_POINTS;
+        }
     }
 
     private void applyChainMovement(){
@@ -80,21 +98,68 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        if(!this.level.isClientSide && this.getPhase() == 1){
+            if(roarCooldown > 0){
+                roarCooldown--;
+            }else{
+                this.performRoar();
+                roarCooldown = 200;
+            }
+        }
+    }
+
+    private void performRoar(){
+        this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 3.0F, 1.0F);
+
+        double roarRadius = 10.0;
+        List<LivingEntity> entities = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(roarRadius));
+
+        for (LivingEntity entity : entities){
+            if(entity instanceof ArmorStand){ // Change for chain entity
+                continue;
+            }
+            if (entity != this){
+                double dx = entity.getX() - this.getX();
+                double dz = entity.getZ() - this.getZ();
+                double distance = Math.sqrt(dx * dx + dz * dz);
+
+                if (entity instanceof Player player){
+                    player.hurtMarked = true;
+                }
+
+                if (distance > 0){
+                    double force = 3.5;
+                    entity.setDeltaMovement(dx / distance * force, 0.5, dz / distance * force);
+                }
+            }
+        }
+    }
 
     @Override
     public void onAddedToWorld() {
         super.onAddedToWorld();
-        spawnChains();
-        applyChainMovement();
+        if(getPhase() == 1){
+            spawnChains();
+            applyChainMovement();
 
-        chainsMinLimitX = this.getX() - CHAINS_LIMIT;
-        chainsMaxLimitX = this.getX() + CHAINS_LIMIT;
-        chainsMinLimitZ = this.getZ() - CHAINS_LIMIT;
-        chainsMaxLimitZ = this.getZ() + CHAINS_LIMIT;
+            chainsMinLimitX = this.getX() - CHAINS_LIMIT;
+            chainsMaxLimitX = this.getX() + CHAINS_LIMIT;
+            chainsMinLimitZ = this.getZ() - CHAINS_LIMIT;
+            chainsMaxLimitZ = this.getZ() + CHAINS_LIMIT;
+        }
     }
 
     @Override
     public boolean hurt(DamageSource source, float p_21017_) {
+        if (source.getDirectEntity() instanceof Projectile projectile && phase == 1){
+            projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-1));
+            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 1.0F);
+            return false;
+        }
         removeChains();
         return super.hurt(source, p_21017_);
     }
@@ -115,9 +180,7 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     public void aiStep() {
         super.aiStep();
 
-        LegendsOfValhalla.LOGGER.info("CHAIN MAX LIMIT X {}, CHAIN MIN LIMIT X {}", chainsMaxLimitX, chainsMinLimitX);
-
-        if(phase == 1 && chainsRemaining > 0){
+        if(this.getPhase() == 1 && chainsRemaining >= 0){
            double fenrirPosX = this.getX();
            double fenrirPosZ = this.getZ();
 
@@ -127,10 +190,10 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
            if (fenrirPosZ > chainsMaxLimitZ) this.setPos(fenrirPosX, this.getY(), chainsMaxLimitZ);
         }
 
-        if(this.getHealth() < this.getHealth() * 0.66 && phase == 1){
+        if(chainsRemaining < 0 && this.getPhase() == 1){
             enterPhase2();
         }
-        if(this.getHealth() < this.getHealth() * 0.33 && phase == 2){
+        if(this.getHealth() < this.getHealth() * 0.33 && this.getPhase() == 2){
             enterPhase3();
         }
     }
@@ -151,14 +214,14 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     }
 
     private void enterPhase2(){
-        phase = 2;
+        this.setPhase(2);
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(18.0d);
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.45D);
 
     }
 
     private void enterPhase3(){
-        phase = 3;
+        this.setPhase(3);
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(21.0d);
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.5D);
     }
@@ -172,7 +235,6 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
             tAnimationState.getController().setAnimation(RawAnimation.begin().then("animation.fenrir.walk", Animation.LoopType.LOOP));
             return PlayState.CONTINUE;
         }
-
         return PlayState.CONTINUE;
     }
 
@@ -180,6 +242,4 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
-
 }
