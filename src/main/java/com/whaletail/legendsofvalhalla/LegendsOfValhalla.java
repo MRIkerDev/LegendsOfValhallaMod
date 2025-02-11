@@ -33,14 +33,13 @@ public class LegendsOfValhalla
     // Define mod id in a common place for everything to reference
     public static final String MODID = "legendsofvalhalla";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
 
     //clase main
     public LegendsOfValhalla()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         ModCreativeModTabs.register(modEventBus);
         ModItems.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);

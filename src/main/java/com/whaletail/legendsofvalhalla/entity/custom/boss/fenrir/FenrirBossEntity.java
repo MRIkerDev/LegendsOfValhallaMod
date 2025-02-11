@@ -1,9 +1,9 @@
 package com.whaletail.legendsofvalhalla.entity.custom.boss.fenrir;
 
+import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -34,6 +34,13 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     private Level level;
     private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private final ArrayList<ArmorStand> chains = new ArrayList<>();
+    private final double CHAINS_LIMIT = 5.0F;
+    private double chainsMinLimitX;
+    private double chainsMaxLimitX;
+    private double chainsMinLimitZ;
+    private double chainsMaxLimitZ;
+
+
     public FenrirBossEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.level = level;
@@ -79,6 +86,11 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
         super.onAddedToWorld();
         spawnChains();
         applyChainMovement();
+
+        chainsMinLimitX = this.getX() - CHAINS_LIMIT;
+        chainsMaxLimitX = this.getX() + CHAINS_LIMIT;
+        chainsMinLimitZ = this.getZ() - CHAINS_LIMIT;
+        chainsMaxLimitZ = this.getZ() + CHAINS_LIMIT;
     }
 
     @Override
@@ -102,6 +114,18 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     @Override
     public void aiStep() {
         super.aiStep();
+
+        LegendsOfValhalla.LOGGER.info("CHAIN MAX LIMIT X {}, CHAIN MIN LIMIT X {}", chainsMaxLimitX, chainsMinLimitX);
+
+        if(phase == 1 && chainsRemaining > 0){
+           double fenrirPosX = this.getX();
+           double fenrirPosZ = this.getZ();
+
+           if (fenrirPosX < chainsMinLimitX) this.setPos(chainsMinLimitX, this.getY(), fenrirPosZ);
+           if (fenrirPosX > chainsMaxLimitX) this.setPos(chainsMaxLimitX, this.getY(), fenrirPosZ);
+           if (fenrirPosZ < chainsMinLimitZ) this.setPos(fenrirPosX, this.getY(), chainsMinLimitZ);
+           if (fenrirPosZ > chainsMaxLimitZ) this.setPos(fenrirPosX, this.getY(), chainsMaxLimitZ);
+        }
 
         if(this.getHealth() < this.getHealth() * 0.66 && phase == 1){
             enterPhase2();
