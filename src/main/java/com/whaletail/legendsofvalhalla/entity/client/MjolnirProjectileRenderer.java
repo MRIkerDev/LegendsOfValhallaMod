@@ -31,8 +31,8 @@ public class MjolnirProjectileRenderer extends EntityRenderer<MjolnirProjectileE
             poseStack.mulPose(Axis.XP.rotationDegrees(pEntity.getRenderingRotation() * 6f)); // Giro continuo en Z
             poseStack.translate(0, -1.0f, 0);
         } else {
-            poseStack.mulPose(Axis.YP.rotationDegrees(pEntity.groundedOffset.y));
-            poseStack.mulPose(Axis.XP.rotationDegrees(pEntity.groundedOffset.x));
+            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, pEntity.yRotO, pEntity.getYRot())));
+            poseStack.mulPose(Axis.XP.rotationDegrees(pEntity.getRenderingRotation() * 6f)); // Giro continuo en Z
             poseStack.translate(0, -1.0f, 0);
         }
 

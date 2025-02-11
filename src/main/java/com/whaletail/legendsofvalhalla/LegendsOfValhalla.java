@@ -3,6 +3,7 @@ package com.whaletail.legendsofvalhalla;
 
 import com.mojang.logging.LogUtils;
 
+import com.whaletail.legendsofvalhalla.client.ModClientEvents;
 import com.whaletail.legendsofvalhalla.entity.client.FenrirBossModel;
 import com.whaletail.legendsofvalhalla.entity.client.FenrirBossRenderer;
 import com.whaletail.legendsofvalhalla.entity.client.MjolnirProjectileRenderer;
@@ -46,6 +47,7 @@ public class LegendsOfValhalla
         modEventBus.addListener(this::commonSetup);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
+        ModClientEvents.init();
         GeckoLib.initialize();
 
     }

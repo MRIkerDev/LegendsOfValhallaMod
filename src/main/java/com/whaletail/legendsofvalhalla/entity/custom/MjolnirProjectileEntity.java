@@ -92,7 +92,6 @@ public class MjolnirProjectileEntity extends ThrowableProjectile {
                 }
             }
 
-            this.discard();
         }
     }
 
@@ -106,7 +105,8 @@ public class MjolnirProjectileEntity extends ThrowableProjectile {
             Vec3 direction = new Vec3(owner.getX() - this.getX(), owner.getY() + 1.5 - this.getY(), owner.getZ() - this.getZ()).normalize();
             this.setDeltaMovement(direction.scale(1.5));
 
-            if (this.distanceTo(owner) < 1.5) {
+            // Detectar colisión con hitbox en lugar de solo la distancia
+            if (this.getBoundingBox().intersects(owner.getBoundingBox())) {
                 this.discard();
                 if (owner instanceof Player) {
                     ((Player) owner).getInventory().add(new ItemStack(ModItems.MJOLNIR.get()));
@@ -118,7 +118,13 @@ public class MjolnirProjectileEntity extends ThrowableProjectile {
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
-        entity.hurt(this.damageSources().thrown(this, this.getOwner()), 4);
+
+        // Evitar golpear al lanzador
+        if (entity == this.getOwner()) {
+            return; // No hagas nada si es el lanzador
+        }
+
+        entity.hurt(this.damageSources().thrown(this, this.getOwner()), 400);
 
         if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
             BlockPos hitPos = result.getEntity().blockPosition();
