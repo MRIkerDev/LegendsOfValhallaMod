@@ -1,10 +1,8 @@
 package com.whaletail.legendsofvalhalla.item.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.whaletail.legendsofvalhalla.LegendsOfValhalla;
 import com.whaletail.legendsofvalhalla.item.ModItems;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
