@@ -29,10 +29,15 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 
 public class FenrirBossEntity extends Monster implements GeoEntity {
+    private final int JUMP_ATTACK_COOLDOWN = 100;
+    private int jumpAttackCooldown = 0;
+    private final int ROAR_COOLDOWN = 20;
     private int phase = 1;
     private int chainsRemaining = 3;
     private final Level level;
@@ -46,6 +51,7 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     private final int CHAIN_HIT_POINTS = 4;
     private int chainHitPoints = CHAIN_HIT_POINTS;
     private int roarCooldown = 0;
+    private boolean isHurted = false;
 
     public FenrirBossEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -98,17 +104,70 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
         }
     }
 
+    private void applyBiteAttack(){
+        Player nearestPlayer = this.level.getNearestPlayer(this, 0.5);
+        LegendsOfValhalla.LOGGER.info("Nearest player {}",nearestPlayer);
+        if(nearestPlayer != null){
+            nearestPlayer.setDeltaMovement(0,0,0);
+            nearestPlayer.setNoGravity(true);
+
+            new Timer().schedule(new TimerTask() {
+                int ticks = 0;
+                @Override
+                public void run() {
+                    if(ticks < 20){
+                        nearestPlayer.setPos(nearestPlayer.getX(), nearestPlayer.getY() + 0.05, nearestPlayer.getZ());
+                    }else{
+                        nearestPlayer.setNoGravity(false);
+                        this.cancel();
+                    }
+                    ticks++;
+                }
+            }, 0, 50);
+
+            nearestPlayer.hurt(this.damageSources().mobAttack(this), 10.0F);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        if(!this.level.isClientSide && this.getPhase() == 1){
+        if(!this.level.isClientSide && this.getPhase() == 1 && isHurted){
             if(roarCooldown > 0){
                 roarCooldown--;
             }else{
                 this.performRoar();
-                roarCooldown = 200;
+                isHurted = false;
             }
+        }
+
+        if(!this.level.isClientSide && this.getPhase() == 2){
+            if(jumpAttackCooldown > 0){
+                jumpAttackCooldown--;
+            }else{
+                Player target = this.level.getNearestPlayer(this, 10.0);
+                this.performJumpAttack(target);
+
+                jumpAttackCooldown = JUMP_ATTACK_COOLDOWN;
+            }
+        }
+    }
+
+    private void performJumpAttack(Player target){
+        if (target == null) return;
+
+        double targetX = target.getX();
+        double targetZ = target.getZ();
+
+        double dx = targetX - this.getX();
+        double dz = targetZ - this.getZ();
+        double distance = Math.sqrt(dx * dx + dz * dz);
+
+        if (distance > 0){
+            double speed = 1.2;
+            this.setDeltaMovement(dx / distance * speed, 0.6, dz / distance * speed);
+            this.applyBiteAttack();
         }
     }
 
@@ -161,7 +220,14 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
             return false;
         }
         removeChains();
-        return super.hurt(source, p_21017_);
+        boolean damaged = super.hurt(source, p_21017_);
+
+        if(damaged && !isHurted){
+            roarCooldown = ROAR_COOLDOWN;
+            isHurted = true;
+        }
+
+        return damaged;
     }
 
     @Override
@@ -216,7 +282,7 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     private void enterPhase2(){
         this.setPhase(2);
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(18.0d);
-        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.45D);
+        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.0D);
 
     }
 
