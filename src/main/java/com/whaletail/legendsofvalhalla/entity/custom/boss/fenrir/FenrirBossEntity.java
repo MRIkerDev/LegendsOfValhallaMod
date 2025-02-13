@@ -18,6 +18,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -35,10 +36,11 @@ import java.util.logging.Logger;
 
 
 public class FenrirBossEntity extends Monster implements GeoEntity {
+    private boolean isJumping = false;
     private final int JUMP_ATTACK_COOLDOWN = 100;
     private int jumpAttackCooldown = 0;
     private final int ROAR_COOLDOWN = 20;
-    private int phase = 1;
+    private int phase = 2;
     private int chainsRemaining = 3;
     private final Level level;
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
@@ -105,28 +107,35 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     }
 
     private void applyBiteAttack(){
-        Player nearestPlayer = this.level.getNearestPlayer(this, 0.5);
-        LegendsOfValhalla.LOGGER.info("Nearest player {}",nearestPlayer);
-        if(nearestPlayer != null){
-            nearestPlayer.setDeltaMovement(0,0,0);
-            nearestPlayer.setNoGravity(true);
+        AABB hitbox = this.getBoundingBox().inflate(1.5);
+        List<Entity> entities = this.level.getEntities(this, hitbox, entity -> entity instanceof Player);
 
-            new Timer().schedule(new TimerTask() {
-                int ticks = 0;
-                @Override
-                public void run() {
-                    if(ticks < 20){
-                        nearestPlayer.setPos(nearestPlayer.getX(), nearestPlayer.getY() + 0.05, nearestPlayer.getZ());
-                    }else{
-                        nearestPlayer.setNoGravity(false);
-                        this.cancel();
+        LegendsOfValhalla.LOGGER.info("Nearest player {}",entities);
+
+        for(Entity entity: entities){
+            if (entity instanceof Player player){
+                player.setDeltaMovement(0,0,0);
+                player.setNoGravity(true);
+
+                new Timer().schedule(new TimerTask() {
+                    int ticks = 0;
+                    @Override
+                    public void run() {
+                        if(ticks < 10){
+                            player.setPos(player.getX(), player.getY() + 0.005, player.getZ());
+                        }else{
+                            player.setNoGravity(false);
+                            this.cancel();
+                        }
+                        ticks++;
                     }
-                    ticks++;
-                }
-            }, 0, 50);
+                }, 0, 50);
 
-            nearestPlayer.hurt(this.damageSources().mobAttack(this), 10.0F);
+                player.hurt(this.damageSources().mobAttack(this), 10.0F);
+                isJumping = false;
+            }
         }
+
     }
 
     @Override
@@ -146,10 +155,14 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
             if(jumpAttackCooldown > 0){
                 jumpAttackCooldown--;
             }else{
-                Player target = this.level.getNearestPlayer(this, 10.0);
+                Player target = this.level.getNearestPlayer(this, 15.0);
                 this.performJumpAttack(target);
-
+                LegendsOfValhalla.LOGGER.info("Salto hecho");
+                isJumping = true;
                 jumpAttackCooldown = JUMP_ATTACK_COOLDOWN;
+            }
+            if(isJumping){
+                applyBiteAttack();
             }
         }
     }
@@ -164,11 +177,14 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
         double dz = targetZ - this.getZ();
         double distance = Math.sqrt(dx * dx + dz * dz);
 
-        if (distance > 0){
-            double speed = 1.2;
-            this.setDeltaMovement(dx / distance * speed, 0.6, dz / distance * speed);
-            this.applyBiteAttack();
+        if (distance > 0 ){
+            double speed = 1.6; // 📌 Velocidad ajustada para que llegue bien
+            double jumpHeight = 0.4 + (distance / 15) * 0.4; // 📌 Más altura si el objetivo está lejos
+
+            this.setDeltaMovement(dx / distance * speed, jumpHeight, dz / distance * speed);
         }
+
+
     }
 
     private void performRoar(){
@@ -245,7 +261,7 @@ public class FenrirBossEntity extends Monster implements GeoEntity {
     @Override
     public void aiStep() {
         super.aiStep();
-
+        enterPhase2();
         if(this.getPhase() == 1 && chainsRemaining >= 0){
            double fenrirPosX = this.getX();
            double fenrirPosZ = this.getZ();
