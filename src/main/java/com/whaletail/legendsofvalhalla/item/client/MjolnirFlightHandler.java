@@ -22,6 +22,7 @@ public class MjolnirFlightHandler {
     private static boolean isFlying = false; // Para controlar si el jugador está volando
     private static int flightTickCounter = 0; // Contador de ticks para el retraso
     private static int liftTickCounter = 0; // Contador de ticks para la elevación progresiva
+    private static Vec3 lastVelocity = Vec3.ZERO; // Última velocidad registrada
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -34,11 +35,10 @@ public class MjolnirFlightHandler {
 
             // Verificar si el jugador tiene el martillo en la mano
             if (mainHandItem.is(ModItems.MJOLNIR.get())) {
-                mc.player.fallDistance = 0.0f; // Evitar daño por caída siempre que tenga el martillo
 
                 if (mc.options.keyJump.isDown() && InputConstants.isKeyDown(mc.getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL)) { // Verificar si las teclas de salto (Espacio) y Ctrl están presionadas
                     flightTickCounter++;
-                    if (flightTickCounter >= 20) { // Esperar un segundo (20 ticks)
+                    if (flightTickCounter >= 4) { // Esperar un segundo (4 ticks)
                         // Impulsar hacia adelante con la animación de las elytras
                         if (!mc.player.isFallFlying()) {
                             mc.player.startFallFlying();
@@ -48,20 +48,25 @@ public class MjolnirFlightHandler {
                         double x = -Math.sin(yaw) * Math.cos(pitch);
                         double y = -Math.sin(pitch);
                         double z = Math.cos(yaw) * Math.cos(pitch);
-                        mc.player.setDeltaMovement(x * 1.5, y * 1.5, z * 1.5); // Ajusta la velocidad del impulso
+                        Vec3 velocity = new Vec3(x * 1.5, y * 1.5, z * 1.5); // Ajusta la velocidad del impulso
+                        mc.player.setDeltaMovement(velocity);
+                        lastVelocity = velocity; // Guardar la última velocidad
                         isFlying = true;
                     }
                 } else if (mc.options.keyJump.isDown()) { // Verificar si solo la tecla de salto (Espacio) está presionada
                     liftTickCounter++;
-                    double liftSpeed = Math.min(0.1 * liftTickCounter / 20.0, 2.0); // Incrementar la velocidad de elevación progresivamente, con una velocidad máxima de 2.0
-                    mc.player.setDeltaMovement(mc.player.getDeltaMovement().x, liftSpeed, mc.player.getDeltaMovement().z);
+                    if (flightTickCounter >= 4) { // Esperar un segundo (4 ticks)
+                        double liftSpeed = Math.min(0.1 * liftTickCounter / 2.0, 12.0); // Incrementar la velocidad de elevación progresivamente, con una velocidad máxima de 2.0
+                        mc.player.setDeltaMovement(mc.player.getDeltaMovement().x, liftSpeed, mc.player.getDeltaMovement().z);
+                        mc.player.setSprinting(false); // Evitar la animación de correr
+                    }
                 } else {
                     flightTickCounter = 0; // Reiniciar el contador si se suelta alguna tecla
                     liftTickCounter = 0; // Reiniciar el contador de elevación
                     if (isFlying) {
-                        // Detener el vuelo y regresar al estado normal
+                        // Detener el vuelo y mantener la velocidad progresiva
                         mc.player.stopFallFlying();
-                        mc.player.setDeltaMovement(0, 0, 0); // Detener el movimiento
+                        mc.player.setDeltaMovement(lastVelocity); // Mantener la última velocidad
                         isFlying = false;
                     }
                 }
@@ -69,6 +74,7 @@ public class MjolnirFlightHandler {
                 isFlying = false;
                 flightTickCounter = 0; // Reiniciar el contador si no tiene el martillo
                 liftTickCounter = 0; // Reiniciar el contador de elevación
+                lastVelocity = Vec3.ZERO; // Reiniciar la última velocidad
             }
 
             // Verificar si el jugador está cerca del suelo para detener el vuelo
@@ -78,6 +84,7 @@ public class MjolnirFlightHandler {
                 isFlying = false;
                 flightTickCounter = 0; // Reiniciar el contador al aterrizar
                 liftTickCounter = 0; // Reiniciar el contador de elevación
+                lastVelocity = Vec3.ZERO; // Reiniciar la última velocidad
             }
 
             // Verificar si el jugador choca con un bloque
@@ -92,6 +99,7 @@ public class MjolnirFlightHandler {
                     isFlying = false;
                     flightTickCounter = 0; // Reiniciar el contador al chocar
                     liftTickCounter = 0; // Reiniciar el contador de elevación
+                    lastVelocity = Vec3.ZERO; // Reiniciar la última velocidad
                 }
             }
         }
