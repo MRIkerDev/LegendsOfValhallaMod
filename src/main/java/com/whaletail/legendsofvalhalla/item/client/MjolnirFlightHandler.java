@@ -22,7 +22,7 @@ public class MjolnirFlightHandler {
     private static boolean isFlying = false; // Para controlar si el jugador está volando
     private static int flightTickCounter = 0; // Contador de ticks para el retraso
     private static int liftTickCounter = 0;
-    private static Vec3 lastVelocity = Vec3.ZERO; // ultima velocidad registrada
+    private static Vec3 lastVelocity = Vec3.ZERO; // Última velocidad registrada
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
@@ -54,8 +54,9 @@ public class MjolnirFlightHandler {
                         isFlying = true;
                     }
                 } else if (mc.options.keyJump.isDown()) { // Verificar si solo la tecla de salto (Espacio) está presionada
+                    flightTickCounter++;
                     liftTickCounter++;
-                    if (flightTickCounter >= 4) {
+                    if (flightTickCounter >= 4) { // Esperar un segundo (4 ticks)
                         double liftSpeed = Math.min(0.1 * liftTickCounter / 2.0, 12.0);
                         mc.player.setDeltaMovement(mc.player.getDeltaMovement().x, liftSpeed, mc.player.getDeltaMovement().z);
                         mc.player.setSprinting(false);
@@ -71,19 +72,18 @@ public class MjolnirFlightHandler {
                 }
             } else {
                 isFlying = false;
-                flightTickCounter = 0; //  si no tiene el martillo
+                flightTickCounter = 0; // Reiniciar el contador si no tiene el martillo
                 liftTickCounter = 0;
                 lastVelocity = Vec3.ZERO;
             }
-
 
             if (isFlying && mc.player.onGround()) {
                 mc.player.stopFallFlying();
                 mc.player.setDeltaMovement(0, 0, 0); // Detener el movimiento
                 isFlying = false;
-                flightTickCounter = 0; // contador al aterrizar
-                liftTickCounter = 0; //contador de elevación
-                lastVelocity = Vec3.ZERO; // ultima velocidad
+                flightTickCounter = 0; // Reiniciar el contador al aterrizar
+                liftTickCounter = 0; // Reiniciar el contador de elevación
+                lastVelocity = Vec3.ZERO; // Reiniciar la última velocidad
             }
 
             // Verificar si el jugador choca con un bloque
