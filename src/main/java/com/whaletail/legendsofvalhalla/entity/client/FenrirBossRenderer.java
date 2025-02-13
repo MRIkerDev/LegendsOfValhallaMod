@@ -20,6 +20,7 @@ public class FenrirBossRenderer extends GeoEntityRenderer<FenrirBossEntity> {
 
     @Override
     public void render(FenrirBossEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        // poseStack.scale(4.0F, 4.0F, 4.0F);
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 }

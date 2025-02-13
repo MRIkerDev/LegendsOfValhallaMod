@@ -23,5 +23,5 @@ public class ModEntities {
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
     }
-    public static final RegistryObject<EntityType<FenrirBossEntity>> FENRIR = ENTITY_TYPES.register("fenrir",() -> EntityType.Builder.of(FenrirBossEntity::new, MobCategory.MONSTER).sized(4.0F,4.0F).build("fenrir"));
+    public static final RegistryObject<EntityType<FenrirBossEntity>> FENRIR = ENTITY_TYPES.register("fenrir",() -> EntityType.Builder.of(FenrirBossEntity::new, MobCategory.MONSTER).sized(1F,1F).build("fenrir"));
 }
