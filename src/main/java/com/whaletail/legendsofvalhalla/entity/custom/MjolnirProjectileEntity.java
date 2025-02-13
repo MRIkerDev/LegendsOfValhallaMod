@@ -93,6 +93,23 @@ public class MjolnirProjectileEntity extends ThrowableProjectile {
             }
 
         }
+        if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
+            BlockPos hitPos = result.getBlockPos().above();
+
+            if (serverLevel.isThundering() && serverLevel.canSeeSky(hitPos)) {
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                if (lightning != null) {
+                    lightning.moveTo(hitPos.getX(), hitPos.getY(), hitPos.getZ());
+                    serverLevel.addFreshEntity(lightning);
+                }
+            }else {
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                if (lightning != null) {
+                    lightning.moveTo(hitPos.getX(), hitPos.getY(), hitPos.getZ());
+                    serverLevel.addFreshEntity(lightning);
+                }
+            }
+        }
     }
 
 
@@ -130,6 +147,12 @@ public class MjolnirProjectileEntity extends ThrowableProjectile {
             BlockPos hitPos = result.getEntity().blockPosition();
 
             if (serverLevel.isThundering() && serverLevel.canSeeSky(hitPos)) {
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                if (lightning != null) {
+                    lightning.moveTo(hitPos.getX(), hitPos.getY(), hitPos.getZ());
+                    serverLevel.addFreshEntity(lightning);
+                }
+            }else {
                 LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
                 if (lightning != null) {
                     lightning.moveTo(hitPos.getX(), hitPos.getY(), hitPos.getZ());

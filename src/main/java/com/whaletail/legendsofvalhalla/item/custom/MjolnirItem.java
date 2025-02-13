@@ -2,6 +2,7 @@ package com.whaletail.legendsofvalhalla.item.custom;
 
 import com.whaletail.legendsofvalhalla.entity.custom.MjolnirProjectileEntity;
 import com.whaletail.legendsofvalhalla.item.client.MjolnirRenderer;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -18,11 +19,10 @@ import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,10 +42,11 @@ import java.util.function.Consumer;
 public class MjolnirItem extends ElytraItem implements GeoItem {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private static final KeyMapping keyShootLightning = new KeyMapping("key.shoot_lightning", GLFW.GLFW_KEY_G, "key.categories.gameplay");
 
     // Define los valores de daño y retroceso
-    private static final float DAMAGE_AMOUNT = 10.0F;
-    private static final float KNOCKBACK_STRENGTH = 1.5F;
+    private static final float DAMAGE_AMOUNT = 17.0F;
+    private static final float KNOCKBACK_STRENGTH = 3.5F;
 
     public MjolnirItem(Properties properties) {
         super(properties);
@@ -146,19 +147,21 @@ public class MjolnirItem extends ElytraItem implements GeoItem {
 
     // Evento para disparar un rayo en la dirección en la que el jugador está mirando al presionar la tecla G
     @SubscribeEvent
-    public static void onKeyPress(InputEvent.Key event) {
-        if (event.getKey() == GLFW.GLFW_KEY_G && event.getAction() == GLFW.GLFW_PRESS) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
             Minecraft mc = Minecraft.getInstance();
-            Player player = mc.player;
-            if (player != null) {
-                ItemStack mainHandItem = player.getMainHandItem();
-                if (mainHandItem.getItem() instanceof MjolnirItem && !player.level().isClientSide && player.level() instanceof ServerLevel serverLevel) {
-                    Vec3 lookVec = player.getLookAngle();
-                    BlockPos targetPos = player.blockPosition().offset((int) (lookVec.x * 10), (int) (lookVec.y * 10), (int) (lookVec.z * 10)); // Ajusta la distancia del rayo
-                    LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
-                    if (lightning != null) {
-                        lightning.moveTo(targetPos.getX(), targetPos.getY(), targetPos.getZ());
-                        serverLevel.addFreshEntity(lightning);
+            while (keyShootLightning.consumeClick()) { // Verificar si la tecla G está presionada
+                Player player = mc.player;
+                if (player != null) {
+                    ItemStack mainHandItem = player.getMainHandItem();
+                    if (mainHandItem.getItem() instanceof MjolnirItem && !player.level().isClientSide && player.level() instanceof ServerLevel serverLevel) {
+                        Vec3 lookVec = player.getLookAngle();
+                        BlockPos targetPos = player.blockPosition().offset((int) (lookVec.x * 10), (int) (lookVec.y * 10), (int) (lookVec.z * 10)); // Ajusta la distancia del rayo
+                        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+                        if (lightning != null) {
+                            lightning.moveTo(targetPos.getX(), targetPos.getY(), targetPos.getZ());
+                            serverLevel.addFreshEntity(lightning);
+                        }
                     }
                 }
             }
