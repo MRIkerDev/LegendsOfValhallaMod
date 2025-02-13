@@ -75,6 +75,7 @@ public class MjolnirFlightHandler {
                 flightTickCounter = 0; // Reiniciar el contador si no tiene el martillo
                 liftTickCounter = 0;
                 lastVelocity = Vec3.ZERO;
+                mc.player.stopFallFlying();
             }
 
             if (isFlying && mc.player.onGround()) {
